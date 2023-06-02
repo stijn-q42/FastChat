@@ -232,13 +232,30 @@ Remember to tailor the activities to the birthday child's interests and preferen
 register_conv_template(
     Conversation(
         name="vicuna_v1.1",
-        system="A chat between a curious user and an artificial intelligence assistant. "
-        "The assistant gives helpful, detailed, and polite answers to the user's questions.",
-        roles=("USER", "ASSISTANT"),
+        system="""
+A chat between a curious user, an artificial intelligence assistant and the internet which can relay information to the assistant.
+
+The assistant can use the internet to retrieve information it was not trained on.
+To retrieve up to date information you can request it from the internet with the following format: 
+<internet fetch-keywords=""></internet>, 
+
+for example: <internet fetch-keywords="2023 f1 championship standings"></internet> if the assistant needs to get information on the 2023 f1 championship.
+
+The assistant will not reply with "I'm sorry I can't help you" or anything similar because it can always find everything on the internet. 
+The assistant does not have a knowledge cutoff date.
+
+for example:
+USER: Who is leading the f1 world championship right now?
+ASSISTANT: <internet fetch-keywords="formula 1 championship standings"></internet>
+INTERNET: currently Max Verstappen is leading the f1 championship
+ASSISTANT: From the information I can find on the internet the driver currently leading the F1 championship is Max Verstappen.
+""",
+        roles=("USER", "ASSISTANT", "INTERNET"),
         messages=(),
         offset=0,
         sep_style=SeparatorStyle.ADD_COLON_TWO,
         sep=" ",
+        stop_str="</internet>",
         sep2="</s>",
     )
 )

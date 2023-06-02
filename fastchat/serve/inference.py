@@ -6,6 +6,7 @@ from typing import Iterable, Optional
 import sys
 import time
 import warnings
+import re
 
 import psutil
 import torch
@@ -30,7 +31,7 @@ from transformers.generation.logits_process import (
 from fastchat.conversation import get_conv_template, SeparatorStyle
 from fastchat.model.model_adapter import load_model, get_conversation_template
 from fastchat.model.chatglm_model import chatglm_generate_stream
-
+from fastchat.find_website import fetch_command, fetch_command_safe
 
 def prepare_logits_processor(
     temperature: float, repetition_penalty: float, top_p: float, top_k: int
@@ -275,17 +276,29 @@ def chat_loop(
         conv = get_conv_template(conv_template)
     else:
         conv = get_conversation_template(model_path)
+    
 
     while True:
+        skip_user_input = False
+
+        if len(conv.messages) > 0:
+            [role, last_message] = conv.messages[len(conv.messages) - 1]
+            if role == "INTERNET":
+                skip_user_input = True
+
         try:
-            inp = chatio.prompt_for_input(conv.roles[0])
+            if not skip_user_input:
+                inp = chatio.prompt_for_input(conv.roles[0])
         except EOFError:
             inp = ""
         if not inp:
             print("exit...")
             break
 
-        conv.append_message(conv.roles[0], inp)
+
+        if not skip_user_input:
+            conv.append_message(conv.roles[0], inp)
+
         conv.append_message(conv.roles[1], None)
 
         if is_chatglm:
@@ -311,7 +324,21 @@ def chat_loop(
         t = time.time()
         outputs = chatio.stream_output(output_stream)
         duration = time.time() - t
-        conv.update_last_message(outputs.strip())
+
+        string_output = outputs.strip()
+        conv.update_last_message(string_output)
+
+        if "<internet" in string_output:
+            pattern = r'fetch-keywords="([^"]*)"'
+
+            # Find the match using regex search
+            keywords = re.search(pattern, string_output).group(1)
+
+            [url, text] = fetch_command(keywords)
+
+            print(f"{conv.roles[2]}: fetching from the internet: {url}")
+
+            conv.append_message(conv.roles[2], f"{keywords}: {text}")
 
         if debug:
             num_tokens = len(tokenizer.encode(outputs))
