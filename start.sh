@@ -1,0 +1,1 @@
+python -m fastchat.serve.cli --model-path ./vicuna/vicuna-7b --device mps

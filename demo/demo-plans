@@ -1,0 +1,39 @@
+# Introduction
+
+- I'd do an introduction but it would be more fun to save this for later in the presentation.
+- LLMs are amazing new development but heavy
+
+  - We only have access to them as a service
+  - we can manage it ourself
+
+  - They are not sustainable
+  - GPT3 uses about 700gb VRAM on a server.
+  - OpenAI is bleeding money if it wasnt't for venture capitalism.
+
+- Facebook LLaMA models have leaked and since then open source community has been going crazy
+- These are much smalled (down to 5% the size) and can be trained to very GPT3 comparable performance like these:
+
+  - https://chat.lmsys.org/
+
+- We're running Vicuna, a model based on LLaMA and then trained on chatGPT output to be more truthful.
+
+- But the best thing is not running them on a server but yourself.
+- Because they are open source
+
+  - you can host them yourself (privacy)
+  - theoretically much cheaper
+  - can be tinkered with
+
+- At first I wanted to give a model access to our internal documents and make a company brain
+- then I thought, why just documents?
+
+- What happens when you give a small model (vicuna 7b) access to the internet
+
+- cool, now how do we use it?
+- we don't it doesn't have a commercial licence yet.
+
+# Prompts:
+
+- Find information about me, Stijn de Ligt, on the internet and write a short personal introduction that I can use for introducing myself to my international colleagues. Write in first person!
+
+- who won the 2023 spanish grand prix?
